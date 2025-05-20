@@ -144,11 +144,51 @@
       0% { opacity: 0.95; }
       100% { opacity: 1; }
     }
+    #sorryMeter {
+    width: 300px;
+    appearance: none;
+    height: 12px;
+    border-radius: 6px;
+    background: linear-gradient(90deg, #4caf50, #a5d6a7);
+    box-shadow: 0 0 15px 2px #4caf50;
+    animation: sorryGlow 2s infinite ease-in-out;
+    pointer-events: none; /* makes it immovable */
+  }
+
+  /* Thumb styling (visible, but user can't move it) */
+  #sorryMeter::-webkit-slider-thumb {
+    appearance: none;
+    height: 20px;
+    width: 20px;
+    background: #ffffff;
+    border: 2px solid #4caf50;
+    border-radius: 50%;
+    cursor: not-allowed;
+    margin-top: -4px;
+  }
+
+  #sorryMeter::-moz-range-thumb {
+    height: 20px;
+    width: 20px;
+    background: #ffffff;
+    border: 2px solid #4caf50;
+    border-radius: 50%;
+    cursor: not-allowed;
+  }
+
+  /* Animation */
+  @keyframes sorryGlow {
+    0% { box-shadow: 0 0 10px 2px #4caf50; }
+    50% { box-shadow: 0 0 25px 4px #a5d6a7; }
+    100% { box-shadow: 0 0 10px 2px #4caf50; }
+  }
+
+
 
   </style>
 </head>
 <body>
-  <h1>How Angry Is Yazhini(uuuuuuu) Today? 💖</h1>
+  <h1>How Angry Is Yazhini(uuuuuuu) This Week? 💖</h1>
   <div class="character" id="character">🐻</div>
 
   <label for="angerLevel">Anger Level: <span id="angerValue">0</span></label><br/>
@@ -160,6 +200,12 @@
     <h3>Past Anger Levels 📅</h3>
     <div id="angerLog">Loading...</div>
   </div>
+  <div class="sorry-container">
+    <label for="sorryMeter">"Sriram" Sorry Meter 🥺🙏: <span>10</span></label><br/>
+    <input type="range" min="0" max="10" value="10" id="sorryMeter" readonly />
+  </div>
+
+
 
   <!-- Particle container -->
   <div id="particles"></div>
