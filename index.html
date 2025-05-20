@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anger-O-Meter 💢❤️</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      transition: background 1s ease;
+      overflow-x: hidden;
+      position: relative;
+      min-height: 100vh;
+      background: linear-gradient(to bottom, #a2c0f5, #5a9bd4);
+    }
+    h1 {
+      color: #e75480;
+      font-size: 2.5em;
+      z-index: 10;
+      position: relative;
+    }
+    .character {
+      font-size: 5em;
+      margin: 20px;
+      transition: transform 0.3s;
+      z-index: 10;
+      position: relative;
+    }
+    input[type=range] {
+      width: 300px;
+      z-index: 10;
+      position: relative;
+    }
+    .log {
+      margin-top: 30px;
+      width: 300px;
+      background: #ffe4e1;
+      padding: 10px;
+      border-radius: 12px;
+      z-index: 10;
+      position: relative;
+    }
+    .log h3 {
+      margin-top: 0;
+    }
+    .entry {
+      margin: 5px 0;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #f5a0ca;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 10;
+      position: relative;
+    }
+    button:hover {
+      background-color: #ff1493;
+    }
+
+    /* Particle container */
+    #particles {
+      pointer-events: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: visible;
+      z-index: 1;
+    }
+
+    /* Raindrop style */
+    .raindrop {
+      position: absolute;
+      top: -20px;
+      width: 2px;
+      height: 15px;
+      background: #bbdefb;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation-name: fall;
+      animation-timing-function: linear;
+      animation-iteration-count: infinite;
+    }
+    @keyframes fall {
+      0% { transform: translateY(0); opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+
+    /* Flame style */
+    .flame {
+      position: absolute;
+      bottom: 0;
+      width: 10px;
+      height: 30px;
+      background: radial-gradient(circle at 50% 20%, #ff4500, #ffa500 60%, transparent 90%);
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      opacity: 0.8;
+      animation-name: flickerFlame;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+    }
+    @keyframes flickerFlame {
+      0%, 100% { transform: scaleY(1) scaleX(1) translateX(0); opacity: 0.8; }
+      50% { transform: scaleY(1.2) scaleX(0.8) translateX(3px); opacity: 1; }
+    }
+
+    /* Background gradients */
+    body.rainy {
+      background: linear-gradient(to bottom, #a2c0f5, #5a9bd4);
+      background-size: 400% 400%;
+      animation: rainBG 1.5s linear infinite;
+    }
+    @keyframes rainBG {
+      0% { background-position: 0 0; }
+      100% { background-position: 0 100%; }
+    }
+
+    body.dry {
+      background: linear-gradient(to bottom, #f9d29d, #f8b500);
+      background-size: 400% 400%;
+      animation: drywind 10s ease-in-out infinite;
+    }
+    @keyframes drywind {
+      0% { background-position: 0 0; }
+      100% { background-position: 100% 100%; }
+    }
+
+    body.burning {
+      background: radial-gradient(circle at center, #ff0000 0%, #330000 100%);
+      animation: flickerBG 0.15s infinite alternate;
+    }
+    @keyframes flickerBG {
+      0% { opacity: 0.95; }
+      100% { opacity: 1; }
+    }
+
+  </style>
+</head>
+<body>
+  <h1>How Angry Is Yazhini(uuuuuuu) This Week? 💖</h1>
+  <div class="character" id="character">🐻</div>
+
+  <label for="angerLevel">Anger Level: <span id="angerValue">0</span></label><br/>
+  <input type="range" min="0" max="10" value="0" id="angerLevel" />
+  <br/>
+  <button onclick="submitAnger()">Let It Out 💢</button>
+
+  <div class="log">
+    <h3>Past Anger Levels 📅</h3>
+    <div id="angerLog">Loading...</div>
+  </div>
+
+  <!-- Particle container -->
+  <div id="particles"></div>
+
+  <script>
+    const characterEl = document.getElementById('character');
+    const angerLevelEl = document.getElementById('angerLevel');
+    const angerValueEl = document.getElementById('angerValue');
+    const angerLogEl = document.getElementById('angerLog');
+    const particlesContainer = document.getElementById('particles');
+
+    const faces = ['🐻', '🙂', '😊', '😐', '😑', '😕', '😠', '😡', '🔥', '💢', '💀'];
+
+    // 👉 Replace this with your actual Google Apps Script Web App URL
+    const SHEET_API_URL = 'https://script.google.com/macros/s/AKfycbxAKV-55vM2VDbvoghIfBT6eDFKTv9FHPps1oGC8B8ynZDljv7-nemjq0bcHKrjMcQI/exec';
+
+    angerLevelEl.addEventListener('input', () => {
+      const level = parseInt(angerLevelEl.value);
+      angerValueEl.textContent = level;
+      characterEl.textContent = faces[level];
+      applyBackgroundEffect(level);
+      createParticles(level);
+    });
+
+    function applyBackgroundEffect(level) {
+      document.body.classList.remove("burning", "dry", "rainy");
+      if (level >= 10) {
+        document.body.classList.add("burning");
+      } else if (level >= 5) {
+        document.body.classList.add("dry");
+      } else {
+        document.body.classList.add("rainy");
+      }
+    }
+
+    function createParticles(level) {
+      particlesContainer.innerHTML = ''; // clear existing
+
+      if(level <= 2) {
+        // Create raindrops
+        for(let i=0; i<100; i++) {
+          const drop = document.createElement('div');
+          drop.className = 'raindrop';
+          drop.style.left = Math.random() * window.innerWidth + 'px';
+          drop.style.animationDuration = (0.5 + Math.random()) + 's';
+          drop.style.animationDelay = (Math.random() * 5) + 's';
+          drop.style.top = (-20 - Math.random()*100) + 'px';
+          particlesContainer.appendChild(drop);
+        }
+      } else if(level >= 8) {
+        // Create flames
+        for(let i=0; i<40; i++) {
+          const flame = document.createElement('div');
+          flame.className = 'flame';
+          flame.style.left = Math.random() * window.innerWidth + 'px';
+          flame.style.bottom = (Math.random() * 30) + 'px';
+          flame.style.animationDuration = (0.8 + Math.random()) + 's';
+          flame.style.animationDelay = (Math.random() * 1.5) + 's';
+          particlesContainer.appendChild(flame);
+        }
+      }
+      // No particles for levels 1-9 except 5-9 dry background (no particles)
+    }
+
+    function submitAnger() {
+      const level = parseInt(angerLevelEl.value);
+      fetch(SHEET_API_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ level })
+      }).then(() => {
+        alert('Submitted!');
+        fetchLog();
+      }).catch(err => alert('Error: ' + err));
+    }
+
+    function fetchLog() {
+      fetch(SHEET_API_URL)
+        .then(res => res.json())
+        .then(data => {
+          angerLogEl.innerHTML = '';
+          data.slice(-7).reverse().forEach(entry => {
+            const date = new Date(entry.date).toLocaleDateString();
+            angerLogEl.innerHTML += `<div class="entry">${date}: Level ${entry.level} ${faces[entry.level]}</div>`;
+          });
+        })
+        .catch(err => {
+          angerLogEl.innerHTML = 'Failed to load data.';
+          console.error(err);
+        });
+    }
+
+    // Initial load
+    fetchLog();
+    applyBackgroundEffect(0);
+    createParticles(0);
+  </script>
+</body>
+</html>
